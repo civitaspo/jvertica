@@ -42,7 +42,7 @@ class Jvertica
                   rescue => e
                     raise ConnectionError.new("Connection Failed.\n" + 
                       "Error Message => #{e.message}\n" + 
-                      "see documentation => #{@@connection_property_document_url}\n")
+                      "see documentation => #{Constant::CONNECTION_PROPERTY_DOCUMENT_URL}\n")
                   end
   end
 
