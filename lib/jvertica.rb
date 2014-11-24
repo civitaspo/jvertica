@@ -110,15 +110,14 @@ class Jvertica
         end
 
       elsif block_given?
-        rio, wio = IO.pipe 
+        i, o = IO.pipe
         begin
-          yield(wio)
-          stream.addStream org.jruby.util.IOInputStream.new(rio)
+          yield(o)
+          o.close
+          stream.addStream org.jruby.util.IOInputStream.new(i)
         rescue => e
           raise e
         ensure
-          wio.close
-          rio.close
         end
 
       end
