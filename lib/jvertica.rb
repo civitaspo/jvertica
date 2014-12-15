@@ -54,6 +54,10 @@ class Jvertica
     @connection.commit
   end
 
+  def rollback
+    @connection.rollback
+  end
+
   #def prepare query
   #  @pstmt = @connection.prepareStatement query
   #end
@@ -128,12 +132,13 @@ class Jvertica
 
     begin
       stream.execute
+      rejects = stream.getRejects
       results = stream.finish
     rescue => e
       raise e
     end
 
-    results
+    [results, rejects.to_ary]
   end
 
   private
