@@ -39,6 +39,7 @@ class Jvertica
 
     @connection = begin
                     DriverManager.getConnection "jdbc:vertica://#{host}:#{port}/#{database}", prop
+                    @closed = false
                   rescue => e
                     raise ConnectionError.new("Connection Failed.\n" + 
                       "Error Message => #{e.message}\n" + 
@@ -46,12 +47,16 @@ class Jvertica
                   end
   end
 
+  def closed?
+    @closed
+  end
+
   def close
-    @connection.close
+    @connection.close && @closed = true
   end
 
   def commit
-    @connection.commit
+    @connection.commit 
   end
 
   def rollback
