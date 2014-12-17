@@ -111,6 +111,7 @@ class Jvertica
     raise InvalidQuery.new('can use only "copy".') unless %r{\A\s*copy}miu === query
     stream = com.vertica.jdbc.VerticaCopyStream.new @connection, query
     stream.start
+    thread = nil
     begin
       if !source.nil?
 
@@ -131,7 +132,6 @@ class Jvertica
         rescue => e
           raise e
         ensure
-          thread.join
         end
       end
       
@@ -146,6 +146,8 @@ class Jvertica
       results = stream.finish
     rescue => e
       raise e
+    ensure 
+      thread.join
     end
 
     [results, rejects.to_ary]
