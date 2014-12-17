@@ -1,4 +1,5 @@
 require 'java'
+require 'thread'
 require 'jvertica/version'
 require 'jdbc-vertica'
 require Jdbc::Vertica.driver_jar
@@ -122,15 +123,18 @@ class Jvertica
       elsif block_given?
         i, o = IO.pipe
         begin
-          yield(o)
-          o.close
+          thread = Thread.new do
+                     yield(o)
+                     o.close
+                   end
           stream.addStream org.jruby.util.IOInputStream.new(i)
         rescue => e
           raise e
         ensure
+          thread.join
         end
-
       end
+      
     rescue => e
       r = stream.finish
       raise e.class.new("[affected rows: #{r}] #{e.message}")
