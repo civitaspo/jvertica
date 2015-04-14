@@ -95,6 +95,7 @@ class Jvertica
     when %r{\A\s*delete}miu then return stmt.executeUpdate query
     when %r{\A\s*drop}miu   then return stmt.execute query
     when %r{\A\s*create}miu then return stmt.execute query
+    when %r{\A\s*set}miu    then return stmt.execute query
     else rs = stmt.executeQuery query
     end
 
