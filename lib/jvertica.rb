@@ -160,7 +160,7 @@ class Jvertica
     rescue => e
       raise e
     ensure
-      thread.join
+      thread.join unless thread.nil?
     end
 
     [results, rejects.to_ary]
