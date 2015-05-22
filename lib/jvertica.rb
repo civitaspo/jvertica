@@ -89,7 +89,7 @@ class Jvertica
   def query query, &blk
     stmt = @connection.createStatement
     case query
-    when %r{\A\s*copy}miu   then raise InvalidQuery.new('cannot use "copy".')
+    when %r{\A\s*copy}miu   then return stmt.execute query
     when %r{\A\s*insert}miu then return stmt.executeUpdate query
     when %r{\A\s*update}miu then return stmt.executeUpdate query
     when %r{\A\s*delete}miu then return stmt.executeUpdate query
