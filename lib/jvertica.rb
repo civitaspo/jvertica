@@ -16,7 +16,7 @@ class Jvertica
     password: '',
     user: 'dbadmin',
     AutoCommit: false,
-  } 
+  }
 
   def self.connect options = {}
     new options
@@ -41,8 +41,8 @@ class Jvertica
     @connection = begin
                     DriverManager.getConnection "jdbc:vertica://#{host}:#{port}/#{database}", prop
                   rescue => e
-                    raise ConnectionError.new("Connection Failed.\n" + 
-                      "Error Message => #{e.message}\n" + 
+                    raise ConnectionError.new("Connection Failed.\n" +
+                      "Error Message => #{e.message}\n" +
                       "see documentation => #{Constant::CONNECTION_PROPERTY_DOCUMENT_URL}\n")
                   end
     @closed = false
@@ -58,7 +58,7 @@ class Jvertica
   end
 
   def commit
-    @connection.commit 
+    @connection.commit
   end
 
   def rollback
@@ -110,19 +110,22 @@ class Jvertica
 
   def copy query, source = nil, &blk
     raise InvalidQuery.new('can use only "copy".') unless %r{\A\s*copy}miu === query
+    if !source.nil?
+      copy_stream(query, source, &blk)
+    else
+      [query(query), nil]
+    end
+  end
+
+  private
+  def copy_stream query, io = nil, &blk
     stream = com.vertica.jdbc.VerticaCopyStream.new @connection, query
     stream.start
     thread = nil
     begin
-      if !source.nil?
 
-        if source.is_a? IO
-          stream.addStream org.jruby.util.IOInputStream.new(source)
-        else
-          raise InvalidObject.new("source must be a IO.")
-        end
+      if block_given?
 
-      elsif block_given?
         i, o = IO.pipe
         begin
           thread = Thread.new do
@@ -134,8 +137,17 @@ class Jvertica
           raise e
         ensure
         end
+
+      else
+
+        if source.is_a? IO
+          stream.addStream org.jruby.util.IOInputStream.new(source)
+        else
+          raise InvalidObject.new("source must be a IO.")
+        end
+
       end
-      
+
     rescue => e
       r = stream.finish
       raise e.class.new("[affected rows: #{r}] #{e.message}")
@@ -147,14 +159,13 @@ class Jvertica
       results = stream.finish
     rescue => e
       raise e
-    ensure 
+    ensure
       thread.join
     end
 
     [results, rejects.to_ary]
   end
 
-  private
   class ConnectionError < StandardError
   end
 
@@ -357,7 +368,7 @@ class Jvertica
   module Constant
     CONNECTION_PROPERTY_DOCUMENT_URL =
       'http://my.vertica.com/docs/7.1.x/HTML/index.htm#Authoring/ProgrammersGuide/ClientJDBC/JDBCConnectionProperties.htm'
-  
+
     RUBY_SQL_TYPE_MAP = {
       Fixnum => java.sql.Types::INTEGER,
       Bignum => java.sql.Types::BIGINT,
