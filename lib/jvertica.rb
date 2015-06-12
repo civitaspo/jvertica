@@ -110,7 +110,7 @@ class Jvertica
 
   def copy query, source = nil, &blk
     raise InvalidQuery.new('can use only "copy".') unless %r{\A\s*copy}miu === query
-    if !source.nil?
+    if !source.nil? or block_given?
       copy_stream(query, source, &blk)
     else
       [query(query), nil]
