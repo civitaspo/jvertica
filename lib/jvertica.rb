@@ -140,8 +140,8 @@ class Jvertica
 
       else
 
-        if source.is_a? IO
-          stream.addStream org.jruby.util.IOInputStream.new(source)
+        if io.is_a? IO
+          stream.addStream org.jruby.util.IOInputStream.new(io)
         else
           raise InvalidObject.new("source must be a IO.")
         end
