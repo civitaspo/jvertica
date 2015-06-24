@@ -11,7 +11,7 @@
 *.o
 *.a
 mkmf.log
-example
 vendor
 .ruby-version
 .bundle/
+.env
