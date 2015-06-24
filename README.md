@@ -23,7 +23,7 @@ Or install it yourself as:
 ```ruby
 require 'jvertica'
 
-conn_opts = {
+params = {
   host: 'vertica.com',
   port: 5433,
   user: 'xxxxxx',
@@ -32,8 +32,8 @@ conn_opts = {
 
 sql = 'select * from sandbox.jdbc_tests;'
 
-c = Jvertica.connect conn_opts
-c.query sql do |row|
+c = Jvertica.connect(params)
+c.query(sql) do |row|
   p row
 end
 ```
