@@ -42,7 +42,7 @@ class Jvertica
               :getBigDecimal
             end
 
-          else Jvertica::Constant::GETTER_MAP.fetch type
+          else Jvertica::Constant::GETTER_MAP.fetch(type)
             :get_string
           end
 

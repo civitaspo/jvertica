@@ -48,7 +48,7 @@ class Jvertica
     end
 
     def join(sep = $OUTPUT_FIELD_SEPARATOR)
-      to_a.join sep
+      to_a.join(sep)
     end
 
     def eql?(other)
@@ -78,7 +78,7 @@ class Jvertica
     [:id, :tap, :gem, :display, :class, :method, :methods, :trust].select do |s|
       method_defined?(s)
     end.each do |m|
-      undef_method m
+      undef_method(m)
     end
   end
 end
