@@ -26,6 +26,40 @@ class Jvertica
     new(options)
   end
 
+  # Properly quotes a value for safe usage in SQL queries.
+  #
+  # This method has quoting rules for common types. Any other object will be converted to
+  # a string using +:to_s+ and then quoted as a string.
+  #
+  # @param [Object] value The value to quote.
+  # @return [String] The quoted value that can be safely included in SQL queries.
+  def self.quote(value)
+    case value
+    when nil        then 'NULL'
+    when false      then 'FALSE'
+    when true       then 'TRUE'
+    when DateTime   then value.strftime("'%Y-%m-%d %H:%M:%S'::timestamp")
+    when Time       then value.strftime("'%Y-%m-%d %H:%M:%S'::timestamp")
+    when Date       then value.strftime("'%Y-%m-%d'::date")
+    when String     then "'#{value.gsub(/'/, "''")}'"
+    when Numeric    then value.to_s
+    when Array      then value.map { |v| self.quote(v) }.join(', ')
+    else
+      if defined?(BigDecimal) and BigDecimal === value
+        value.to_s('F')
+      else
+        self.quote(value.to_s)
+      end
+    end
+  end
+
+  # Quotes an identifier for safe use within SQL queries, using double quotes.
+  # @param [:to_s] identifier The identifier to quote.
+  # @return [String] The quoted identifier that can be safely included in SQL queries.
+  def self.quote_identifier(identifier)
+    "\"#{identifier.to_s.gsub(/"/, '""')}\""
+  end
+
   attr_reader :host, :port, :database
 
   def initialize(options)
