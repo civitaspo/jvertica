@@ -16,8 +16,7 @@ params = {
 puts params
 
 vertica = Jvertica.connect(params)
-vertica.query("DROP TABLE sandbox.jvertica_test") rescue nil
-vertica.query("CREATE TABLE sandbox.jvertica_test (id integer, str varchar(80))")
+vertica.query("CREATE TABLE IF NOT EXISTS sandbox.jvertica_test (id integer, str varchar(80))")
 vertica.copy("COPY sandbox.jvertica_test FROM STDIN PARSER fjsonparser() NO COMMIT") do |io|
   File.open(File.expand_path('../data.json', __FILE__), 'r') do |f|
     begin
