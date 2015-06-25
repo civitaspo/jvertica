@@ -42,7 +42,7 @@ class Jvertica
 
     @connection =
       begin
-        DriverManager.getConnection("jdbc:vertica://#{host}:#{port}/#{database}", prop)
+        com.vertica.jdbc.Driver.new.connect("jdbc:vertica://#{host}:#{port}/#{database}", prop)
       rescue => e
         raise ConnectionError.new(
           "Connection Failed.\n" <<
@@ -127,9 +127,6 @@ class Jvertica
   end
 
   private
-
-  class DriverManager < java.sql.DriverManager
-  end
 
   class Properties < java.util.Properties
   end
