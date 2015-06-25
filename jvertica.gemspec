@@ -6,8 +6,8 @@ require 'jvertica/version'
 Gem::Specification.new do |spec|
   spec.name          = "jvertica"
   spec.version       = Jvertica::VERSION
-  spec.authors       = ["takahiro.nakayama"]
-  spec.email         = ["civitaspo@gmail.com"]
+  spec.authors       = ["takahiro.nakayama", "Naotoshi Seo"]
+  spec.email         = ["civitaspo@gmail.com", "sonots@gmail.com"]
   spec.summary       = %q{jvertica}
   spec.description   = %q{jvertica presents wrapper methods of jdbc-vertica java native methods.}
   spec.homepage      = "https://github.com/civitaspo/jvertica"
