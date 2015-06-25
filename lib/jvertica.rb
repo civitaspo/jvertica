@@ -182,7 +182,11 @@ class Jvertica
       if block_given?
         i, o = IO.pipe
         thread = Thread.new do
-          yield(o)
+          begin
+            yield(o)
+          rescue => e
+            Thread.main.raise e
+          end
           o.close
         end
         stream.addStream(org.jruby.util.IOInputStream.new(i))
