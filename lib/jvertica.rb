@@ -181,11 +181,12 @@ class Jvertica
 
       if block_given?
         i, o = IO.pipe
+        copy_stream_thread = Thread.current
         thread = Thread.new do
           begin
             yield(o)
           rescue => e
-            Thread.main.raise e
+            copy_stream_thread.raise e
           end
           o.close
         end
