@@ -7,6 +7,7 @@ require 'jvertica/result_set'
 require 'jvertica/row'
 require 'jvertica/error'
 require 'jvertica/constant'
+require 'socket'
 
 class Jvertica
   unless %r{java} === RUBY_PLATFORM
@@ -176,14 +177,16 @@ class Jvertica
 
     stream = com.vertica.jdbc.VerticaCopyStream.new(@connection, query)
     stream.start
-    thread = i = nil
+    thread = serv = i = socket_path = nil
 
     begin
 
       if block_given?
-        i, o = IO.pipe
+        socket_path = Tempfile.create(["jvertica_#{Process.pid}_#{Thread.current.object_id}_", ".sock"]) {|fp| fp.path }
+        serv = UNIXServer.open(socket_path)
         copy_stream_thread = Thread.current
         thread = Thread.new do
+          o = serv.accept
           begin
             yield(o)
           rescue => e
@@ -192,6 +195,7 @@ class Jvertica
             o.close rescue nil
           end
         end
+        i = UNIXSocket.open(socket_path)
         stream.addStream(org.jruby.util.IOInputStream.new(i))
       else
         stream.addStream(org.jruby.util.IOInputStream.new(io))
@@ -208,7 +212,9 @@ class Jvertica
       results = stream.finish
     ensure
       thread.join unless thread.nil?
+      serv.close rescue nil
       i.close rescue nil
+      File.unlink(socket_path) rescue nil
     end
 
     [results, rejects.to_ary]
