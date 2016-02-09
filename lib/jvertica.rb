@@ -176,7 +176,7 @@ class Jvertica
 
     stream = com.vertica.jdbc.VerticaCopyStream.new(@connection, query)
     stream.start
-    thread = nil
+    thread = i = nil
 
     begin
 
@@ -188,8 +188,9 @@ class Jvertica
             yield(o)
           rescue => e
             copy_stream_thread.raise e
+          ensure
+            o.close
           end
-          o.close
         end
         stream.addStream(org.jruby.util.IOInputStream.new(i))
       else
@@ -207,6 +208,7 @@ class Jvertica
       results = stream.finish
     ensure
       thread.join unless thread.nil?
+      i.close rescue nil
     end
 
     [results, rejects.to_ary]
