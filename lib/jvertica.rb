@@ -189,7 +189,7 @@ class Jvertica
           rescue => e
             copy_stream_thread.raise e
           ensure
-            o.close
+            o.close rescue nil
           end
         end
         stream.addStream(org.jruby.util.IOInputStream.new(i))
